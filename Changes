@@ -1,5 +1,11 @@
 Revision history for Perl extension POE::Component::IRC::Onjoin.
 
+1.13   Fri Aug 22 22:28:26 2003
+       - Repackaged distribution
+       - Added many tests
+       - Removed a test that prevented non-interactive testing
+       - Fixed an error with name parsing upon the bot connecting to a channel
+
 1.12   Sun Jan 21 06:00:00 2001
        - Fixed a bug that resulted in being "excess flooded" off a server
          due to onjoins being sent too rapidly.

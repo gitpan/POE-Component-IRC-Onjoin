@@ -1,8 +1,8 @@
-# $Revision: 1.12 $
-# $Id: Onjoin.pm,v 1.12 2001/01/21 11:13:19 afoxson Exp $
+# $Revision: 1.13 $
+# $Id: Onjoin.pm,v 1.13 2001/01/21 11:13:19 afoxson Exp $
 
-# POE::Component::IRC::Onjoin
-# Copyright (c) 2001 Adam J. Foxson. All rights reserved.
+# POE::Component::IRC::Onjoin - provides IRC moved message & onjoin services
+# Copyright (c) 2003 Adam J. Foxson. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ use POE::Component::IRC::Onjoin::EventProcessor;
 
 local $^W;
 
-($VERSION) = '$Revision: 1.12 $' =~ /\s+(\d+\.\d+)\s+/;
+($VERSION) = '$Revision: 1.13 $' =~ /\s+(\d+\.\d+)\s+/;
 @ISA       = qw(POE::Component::IRC::Onjoin::EventProcessor);
 
 my %defaults =
@@ -200,26 +200,26 @@ __END__
 
 =head1 NAME
 
-POE::Component::IRC::Onjoin - Provides IRC moved message & onjoin services
+POE::Component::IRC::Onjoin - provides IRC moved message & onjoin services
 
 =head1 SYNOPSIS
 
-use POE::Component::IRC::Onjoin;
+ use POE::Component::IRC::Onjoin;
 
-my $onjoin  = POE::Component::IRC::Onjoin->new
-(
-  -nick     => 'OnJoinBot',
-  -channel  => '#onjoinbot',
-  -servers  => [qw(token.rhizomatic.net binky.rhizomatic.net)],
-  -message  => q(Hello! Just as an fyi, we moved to #blah),
-);
+ my $onjoin  = POE::Component::IRC::Onjoin->new
+ (
+   -nick     => 'OnJoinBot',
+   -channel  => '#onjoinbot',
+   -servers  => [qw(token.rhizomatic.net binky.rhizomatic.net)],
+   -message  => q(Hello! Just as an fyi, we moved to #blah),
+ );
 
-$onjoin->engage();
+ $onjoin->engage();
 
 =head1 DESCRIPTION
 
 This module implements a class that provides moved message and onjoin services
-as an IRC bot. Based on the configuration parameters passed to it via it's
+as an IRC bot. Based on the configuration parameters passed to it via its
 constructor it will connect to a channel on a server and immediately send
 everyone on that channel a message privately. It will also send the same
 message to the channel itself publically at the specified interval. All users
@@ -241,7 +241,7 @@ Class methods:
                                 massive debugging data. 
   -nick      mandatory n/a      The nick you want the bot to be.
   -username  optional  n/a      The ident, ie username the bot will have.
-  -ircname   optional  seedesc  The name visible from a /whois bot. This will
+  -ircname   optional  seedesc  The name visible from a /whois. This will
                                 default to 'POE::Component::IRC::Session'.
   -exitmsg   optional  'bye!'   Message shown when the bot is disconnected.
   -channel   mandatory n/a      The channel you want the bot to connect to.
@@ -261,17 +261,9 @@ Oject methods:
 
   engage -- Takes no arguments. Initiates the connection. 
 
-=head1 TODO
-
-- Option to remember who we have messaged so we don't annoy
-  people by messaging them multiple times when they join.
-
-  If you have any ideas, suggestions, or comments by all means
-  drop me an e-mail. Thank you.  ;)
-
 =head1 AUTHOR
 
-Adam J. Foxson <afoxson@guild.net>
+Adam J. Foxson <afoxson@pobox.com>
 
 =head1 CREDITS
 
@@ -281,7 +273,7 @@ excellent code review.
 
 =head1 SEE ALSO
 
-POE::Component::IRC::Onjoin::EventProcessor(3)
-perl(1).
+ POE::Component::IRC::Onjoin::EventProcessor(3)
+ perl(1).
 
 =cut

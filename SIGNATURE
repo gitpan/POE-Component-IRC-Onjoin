@@ -1,0 +1,45 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.34.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It would check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 12549569098cbb0efa8a4aa91f5f38068791fe42 COPYING
+SHA1 e57f8774eddc9f977007140aa066f7560f3aabdb Changes
+SHA1 85c5d041acfe187044836f6dd0b3dbdb39648009 INSTALL
+SHA1 3e57d36068f890d589ee7bfbb0d94eec7f8b5fad MANIFEST
+SHA1 c2acf6716aa922ce2e5dff5c739c2b208a270f89 MANIFEST.SKIP
+SHA1 facebdde514617577e783c4ba39a168d8b2f4e05 META.yml
+SHA1 6ef29e7734144ec342120690ea85ae07af12a8ed Makefile.PL
+SHA1 514653bd31caa26e804c1c7297496412f183b5b6 README
+SHA1 eb6b49f98912f084e6449d8a81a2ea8da388c2f0 inc/ExtUtils/AutoInstall.pm
+SHA1 2b6751f9e3f78bfba9ebf348d9d99ddbde9d35e8 inc/Module/Install.pm
+SHA1 b6eb96744a9cabe8e807f453ab27c584c3eda92e inc/Module/Install/AutoInstall.pm
+SHA1 0e59a6491b7275cacf070218c862a42e8135f6d8 inc/Module/Install/Base.pm
+SHA1 a6eff19b88e710df344e3202ff438e41e61482d9 inc/Module/Install/Can.pm
+SHA1 bcee63bdc6667b0827b5461a1e1ad779b207fc23 inc/Module/Install/Fetch.pm
+SHA1 2947a46529e9b64cf5e0291a20332e71edabc546 inc/Module/Install/Include.pm
+SHA1 f042d91d7f691e36c8bcb0b495dfc0b9f92576c3 inc/Module/Install/Makefile.pm
+SHA1 5494a21ff1755b95f0d36c788e4816af0c804645 inc/Module/Install/Metadata.pm
+SHA1 9b06c41dc4bac2ee819854d44000481166d1500c inc/Module/Install/Win32.pm
+SHA1 5909a88ab63a634a4469437d6cd747c309954c19 lib/POE/Component/IRC/Onjoin.pm
+SHA1 8f0a545a85fbbb1747417aef71b9a60fbb855eb5 lib/POE/Component/IRC/Onjoin/EventProcessor.pm
+SHA1 677e680b59871a6d1cdaa64a1df2fb6e451988f1 t/0-signature.t
+SHA1 db58599b8998cd64d4de86988970d61f3293d330 t/onjoin.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.1 (GNU/Linux)
+
+iD8DBQE/RtB45LPoF9AsmmsRAp2hAKC9GIoau5LSram+QJI3vj/8OuynngCfYqpm
+0wQnvopnBcFnqju7OaRpGy4=
+=2FcP
+-----END PGP SIGNATURE-----

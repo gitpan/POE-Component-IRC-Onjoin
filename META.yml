@@ -1,0 +1,12 @@
+name: POE-Component-IRC-Onjoin
+version: 1.13
+abstract: provides IRC moved message & onjoin services
+author: Adam J. Foxson <afoxson@pobox.com>
+license: gpl
+distribution_type: module
+requires:
+  POE::Component::IRC: 2.9
+private:
+  directory:
+    - inc
+generated_by: Module::Install version 0.23

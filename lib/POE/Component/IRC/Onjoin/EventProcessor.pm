@@ -2,7 +2,7 @@
 # $Id: EventProcessor.pm,v 1.7 2001/01/21 11:13:21 afoxson Exp $
 
 # POE::Component::IRC::Onjoin
-# Copyright (c) 2001 Adam J. Foxson. All rights reserved.
+# Copyright (c) 2003 Adam J. Foxson. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,8 +48,8 @@ sub irc_001
 	$kernel->post('onjoin', 'privmsg', [$session->option('-channel')],
 		$session->option('-message'));
 
-    $kernel->delay_add('_time_click', 
-        ($session->option('-interval') * 60)) if $session->option('-interval');
+	$kernel->delay_add('_time_click', 
+		($session->option('-interval') * 60)) if $session->option('-interval');
 }
 
 # Upon getting the list of users on the channel we just joined..
@@ -64,8 +64,10 @@ sub irc_353
 
 	for (@names)
 	{
+		next if /^#/;
+
 		s/^://;
-		s/^[@+]//;
+		s/^[\@+]//;
 
 		next if
 		/^${\($session->option('-channel'))}|${\($session->option('-nick'))}$/i;

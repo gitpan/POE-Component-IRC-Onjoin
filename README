@@ -1,13 +1,74 @@
-This module implements a class that provides moved message and onjoin
-services as an IRC bot. Based on the configuration parameters passed
-to it via it's constructor it will connect to a channel on a server
-and immediately send everyone on that channel a message privately.
-It will also send the same message to the channel itself publically
-at the specified interval. All users joining the channel thereafter
-will also recieve the message. 
+NAME
+    POE::Component::IRC::Onjoin - provides IRC moved message & onjoin
+    services
 
-An useful example of this would be when a channel moves either to a
-new channel or network, you would be able to inform anyone
-connecting to the old channel about the move.
+SYNOPSIS
+     use POE::Component::IRC::Onjoin;
 
-This module requires POE v0.12 and POE::Component::IRC v1.0b.
+     my $onjoin  = POE::Component::IRC::Onjoin->new
+     (
+       -nick     => 'OnJoinBot',
+       -channel  => '#onjoinbot',
+       -servers  => [qw(token.rhizomatic.net binky.rhizomatic.net)],
+       -message  => q(Hello! Just as an fyi, we moved to #blah),
+     );
+
+     $onjoin->engage();
+
+DESCRIPTION
+    This module implements a class that provides moved message and onjoin
+    services as an IRC bot. Based on the configuration parameters passed to
+    it via its constructor it will connect to a channel on a server and
+    immediately send everyone on that channel a message privately. It will
+    also send the same message to the channel itself publically at the
+    specified interval. All users joining the channel thereafter will also
+    recieve the message.
+
+    An useful example of this would be when a channel moves either to a new
+    channel or network, you would be able to effectively inform anyone
+    connecting to the old channel about the new one.
+
+    Class methods:
+
+      new (constructor)
+
+      Takes the following arguments:
+
+      PARAMETER  TYPE      DEFAULT  DESCRIPTION
+
+      -switches  optional  n/a      Currently only '-debug', which will spew
+                                    massive debugging data. 
+      -nick      mandatory n/a      The nick you want the bot to be.
+      -username  optional  n/a      The ident, ie username the bot will have.
+      -ircname   optional  seedesc  The name visible from a /whois. This will
+                                    default to 'POE::Component::IRC::Session'.
+      -exitmsg   optional  'bye!'   Message shown when the bot is disconnected.
+      -channel   mandatory n/a      The channel you want the bot to connect to.
+      -servers   mandatory n/a      The servers you want the bot to connect to.
+                                    It will choose one in a random fashion.
+      -port      optional  6667     The port on the server you want the bot to
+                                    connect to.
+      -interval  optional  30       How often in minutes you want the bot to
+                                    send the message publically to the channel.
+      -message   mandatory n/a      The message you want to be sent to the
+                                    channel and users.
+      -delay     optional  5        Number of seconds to wait between messaging
+                                    users. If this is set too low you will
+                                    probably be knocked off per "Excess Flood".
+
+    Oject methods:
+
+      engage -- Takes no arguments. Initiates the connection. 
+
+AUTHOR
+    Adam J. Foxson <afoxson@pobox.com>
+
+CREDITS
+    Thanks to fimmtiu@#perl for assistance with tracking down some
+    particularly nasty early poe bugs, and to uri@#perl for an excellent
+    code review.
+
+SEE ALSO
+     POE::Component::IRC::Onjoin::EventProcessor(3)
+     perl(1).
+
