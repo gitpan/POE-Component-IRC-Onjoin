@@ -1,0 +1,13 @@
+This module implements a class that provides moved message and onjoin
+services as an IRC bot. Based on the configuration parameters passed
+to it via it's constructor it will connect to a channel on a server
+and immediately send everyone on that channel a message privately.
+It will also send the same message to the channel itself publically
+at the specified interval. All users joining the channel thereafter
+will also recieve the message. 
+
+An useful example of this would be when a channel moves either to a
+new channel or network, you would be able to inform anyone
+connecting to the old channel about the move.
+
+This module requires POE v0.12 and POE::Component::IRC v1.0b.

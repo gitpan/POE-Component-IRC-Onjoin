@@ -1,0 +1,8 @@
+CHANGES
+COPYING
+MANIFEST
+README
+Onjoin/EventProcessor.pm
+Onjoin.pm
+t/onjoin.t
+Makefile.PL
