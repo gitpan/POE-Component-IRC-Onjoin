@@ -10,9 +10,8 @@ my $onjoin = POE::Component::IRC::Onjoin->new
 	-nick      => 'OnJoin' . ($$ % 1000),
 	-channel   => '#onjoinbot',
 	-servers   => [qw(token.rhizomatic.net binky.rhizomatic.net)],
-	-port      => 6667,
-	-interval  => 15,
-	-message   => 'Hi! I\'m a test onjoin bot!',
+	-interval  => 5,
+	-message   => 'Hello! I\'m a test onjoin bot!',
 );
 
 $onjoin->engage();

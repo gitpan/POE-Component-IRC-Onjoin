@@ -1,4 +1,21 @@
 Revision history for Perl extension POE::Component::IRC::Onjoin.
 
+1.12   Sun Jan 21 06:00:00 2001
+       - Fixed a bug that resulted in being "excess flooded" off a server
+         due to onjoins being sent too rapidly.
+       - Fixed a bug that resulted in being "excess flooded" off
+         a server due to mass onjoins after a split.
+       - Fixed a bug that noticed the channel itself as the bot joined.
+       - Fixed a bug that caused self-noticing as the bot joined.
+       - Fixed a bug that was causing a single extraneous notice.
+       - Fixed a typo (missing semi-colon) on the POD usage example.
+       - Fixed a bug that prevented the disabling of public messaging
+         when the interval was set to zero.
+       - Added customizable exit message, username, ircname, and delay.
+       - If a server error or disconnect occurs we will continue
+         randomly trying the servers (that were specified) for
+         a connection.
+       - We now implement a POE style timer for better performance
+
 1.11   Fri Jan 19 18:00:00 2001
-    - Initial public release.
+       - Initial public release.

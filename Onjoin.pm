@@ -1,5 +1,5 @@
-# $Revision: 1.11 $
-# $Id: Onjoin.pm,v 1.11 2001/01/19 22:20:20 afoxson Exp $
+# $Revision: 1.12 $
+# $Id: Onjoin.pm,v 1.12 2001/01/21 11:13:19 afoxson Exp $
 
 # POE::Component::IRC::Onjoin
 # Copyright (c) 2001 Adam J. Foxson. All rights reserved.
@@ -29,19 +29,23 @@ use POE::Component::IRC::Onjoin::EventProcessor;
 
 local $^W;
 
-($VERSION) = '$Revision: 1.11 $' =~ /\s+(\d+\.\d+)\s+/;
+($VERSION) = '$Revision: 1.12 $' =~ /\s+(\d+\.\d+)\s+/;
 @ISA       = qw(POE::Component::IRC::Onjoin::EventProcessor);
 
 my %defaults =
 (
-	-switches => [],
-	-nick     => undef,
-	-channel  => undef,
-	-servers  => [],
-	-port	  => 6667,  # default irc server port to connect to
-	-interval => 30,    # default number of min to send msg to channel
-	-message  => undef,
-	-debug    => 0,
+	-switches     => [],
+	-nick         => undef,
+	-username     => undef,
+	-ircname      => 'POE-Component-IRC-Onjoin-' . $VERSION,
+	-exitmsg      => 'bye!',      # default message when bot gets dropped
+	-delay        => 5,
+	-channel      => undef,
+	-servers      => [],
+	-port	      => 6667,        # default irc server port to connect to
+	-interval     => 30,          # default # of min until send msg to channel
+	-message      => undef,
+	-debug        => 0,
 );
 
 sub new
@@ -67,11 +71,11 @@ sub _process_params
 	}
 
 	# take the params we were given and merge them over the defaults.
-    for my $param (keys %defaults)
-    {   
-        $self->{$param} = $defaults{$param}
-            if not exists $self->{$param};
-    }
+	for my $param (keys %defaults)
+	{   
+		$self->{$param} = $defaults{$param}
+			if not exists $self->{$param};
+	}
 
 	for my $arefs (qw(-switches -servers))
 	{
@@ -92,7 +96,7 @@ sub _process_params
 
 	# We could get silly here and check valid port ranges,
 	# but we're not going to do that. :-)
-	for my $numbers (qw(-port -interval))
+	for my $numbers (qw(-port -interval -delay))
 	{
 		croak "Parameter '$numbers' must be integral."
 			if $self->{$numbers} !~ /^\d+$/;
@@ -108,6 +112,9 @@ sub _process_params
 		$self->{$switch}++;
 	}
 
+	$self->{'-username'} = $self->{'-nick'} unless
+		defined $self->{'-username'};
+
 	# Make sure at least one server to connect to is specified.
 	croak "It would be helpful to specify at least one server."
 		if scalar @{$self->{'-servers'}} < 1;
@@ -121,7 +128,12 @@ sub _start
 	$kernel->alias_set('onjoin_alias');
 
 	$kernel->post('onjoin', 'register',
-		qw(001 433 disconnected socketerr error 353 join));
+		qw
+		(
+			001 433 disconnected socketerr error 353 join
+			_send_delayed_notice _time_click
+		));
+
 	$kernel->post('onjoin', 'connect',
 	{
 		Debug    => $session->option('-debug'),
@@ -129,41 +141,27 @@ sub _start
 		Server   => $session->option('-servers')->
 					[rand @{$session->option('-servers')}],
 		Port     => $session->option('-port'),
-		Username => $session->option('-nick'),
-		Ircname  => $session->option('-nick'),
+		Username => $session->option('-username'),
+		Ircname  => $session->option('-ircname'),
 	});
 }
 
 sub _stop
 {
-	# TODO: Make the quitmsg 'bye!' customizable.
-	my ($kernel) = $_[KERNEL];
+	my ($kernel, $session) = @_[KERNEL, SESSION];
 
-	$kernel->post('onjoin', 'quit', 'bye!');
+	$kernel->post('onjoin', 'quit', $session->option('-exitmsg'));
 	$kernel->alias_remove('onjoin_alias');
 }
 
 sub _time_click
 {
-	my $session = shift;
-	my $timer   = $session->option('-interval');
+	my ($kernel, $session) = @_[KERNEL, SESSION];
 
-	# a signal handler implemented as a closure to deal with timing..
-	# this is used for sending the channel the message at the
-	# specified time interval.
-	return sub
-	{
-		$timer-- if $timer > 0;
+	$kernel->post('onjoin', 'privmsg', $session->option('-channel'),
+		$session->option('-message'));
 
-		if ($timer <= 0)
-		{
-			$poe_kernel->post('onjoin', 'privmsg',
-				$session->option('-channel'), $session->option('-message'));
-			$timer = $session->option('-interval');
-		}
-
-		alarm(60);
-	}
+	$kernel->delay_add('_time_click', ($session->option('-interval') * 60));
 }
 
 sub engage
@@ -186,13 +184,12 @@ sub engage
 				(
 					_start _stop irc_001 irc_disconnected irc_error
 					irc_353 irc_join irc_socketerr irc_433
+					_send_delayed_notice _time_click
 				)
 			]
 		]
 	);
 
-	$SIG{'ALRM'} = _time_click($session);
-	alarm(60);
 
 	$poe_kernel->run();
 }
@@ -211,14 +208,11 @@ use POE::Component::IRC::Onjoin;
 
 my $onjoin  = POE::Component::IRC::Onjoin->new
 (
-  -switches => [qw(-debug)],
   -nick     => 'OnJoinBot',
   -channel  => '#onjoinbot',
   -servers  => [qw(token.rhizomatic.net binky.rhizomatic.net)],
-  -port     => 6667,
-  -interval => 15,
   -message  => q(Hello! Just as an fyi, we moved to #blah),
-)
+);
 
 $onjoin->engage();
 
@@ -246,14 +240,22 @@ Class methods:
   -switches  optional  n/a      Currently only '-debug', which will spew
                                 massive debugging data. 
   -nick      mandatory n/a      The nick you want the bot to be.
+  -username  optional  n/a      The ident, ie username the bot will have.
+  -ircname   optional  seedesc  The name visible from a /whois bot. This will
+                                default to 'POE::Component::IRC::Session'.
+  -exitmsg   optional  'bye!'   Message shown when the bot is disconnected.
   -channel   mandatory n/a      The channel you want the bot to connect to.
-  -servers   mandatory n/a      The server you want the bot to connect to.
+  -servers   mandatory n/a      The servers you want the bot to connect to.
+                                It will choose one in a random fashion.
   -port      optional  6667     The port on the server you want the bot to
                                 connect to.
   -interval  optional  30       How often in minutes you want the bot to
                                 send the message publically to the channel.
   -message   mandatory n/a      The message you want to be sent to the
                                 channel and users.
+  -delay     optional  5        Number of seconds to wait between messaging
+                                users. If this is set too low you will
+                                probably be knocked off per "Excess Flood".
 
 Oject methods:
 
@@ -261,16 +263,8 @@ Oject methods:
 
 =head1 TODO
 
-- Logging functionality, i.e. who we sent private onjoins to.
 - Option to remember who we have messaged so we don't annoy
-  people by messaging them multiple times on joins.
-- Customizable exit message.
-- Ability to switch on or off the following (currently we do all 3):
-  * messaging users when the bot initially connects and gets the list
-    of users on the channel
-  * messaging users when they join the channel
-  * messaging the channel itself at a predetermined interval
-- Allow for different messages for each of the 3 events above
+  people by messaging them multiple times when they join.
 
   If you have any ideas, suggestions, or comments by all means
   drop me an e-mail. Thank you.  ;)
